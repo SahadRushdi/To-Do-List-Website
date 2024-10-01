@@ -1,6 +1,6 @@
 /* Basic styles for the to-do list */
 body {
-    background-color: #f5f5f5;
+    background: linear-gradient(135deg, #3498db, #8e44ad);
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
