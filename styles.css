@@ -43,11 +43,13 @@ h1 {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: medium;
 }
 
 #add-btn:hover {
     background-color: #0056b3;
     font-size: large;
+    font-weight: bold;
 }
 
 #task-list {
@@ -90,6 +92,7 @@ h1 {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: medium;
 }
 
 .delete-btn:hover {
@@ -105,9 +108,11 @@ h1 {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: medium;
 }
 
 #logout-btn:hover {
     background-color: #00b342;
     font-size: large;
+    font-weight: bold;
 }
