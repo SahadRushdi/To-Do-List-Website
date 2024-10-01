@@ -1,5 +1,6 @@
 // Import Firebase functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
 // Firebase configuration
@@ -16,34 +17,43 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getDatabase(app);
 
-// Get references to elements
+// Get references to UI elements
 const taskInput = document.getElementById('task-input');
 const deadlineInput = document.getElementById('deadline-input');
 const addBtn = document.getElementById('add-btn');
 const taskList = document.getElementById('task-list');
+const logoutBtn = document.getElementById('logout-btn');
 
-// Firebase database reference
-const tasksRef = ref(db, 'tasks');
-
-// Load tasks from Firebase when the page loads
-onValue(tasksRef, (snapshot) => {
-    taskList.innerHTML = ""; // Clear the task list
-    const tasks = snapshot.val();
-    for (const key in tasks) {
-        const taskData = tasks[key];
-        displayTask(key, taskData.text, taskData.creationTime, taskData.deadline);
+// Authentication State Change Listener
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        loadTasks(user.uid);
+    } else {
+        window.location.href = "login.html"; // Redirect to login page if not authenticated
     }
 });
 
+// Load tasks from Firebase for the authenticated user
+function loadTasks(userId) {
+    const userTasksRef = ref(db, `tasks/${userId}`);
+    onValue(userTasksRef, (snapshot) => {
+        taskList.innerHTML = ""; // Clear the task list
+        const tasks = snapshot.val();
+        for (const key in tasks) {
+            const taskData = tasks[key];
+            displayTask(userId, key, taskData.text, taskData.creationTime, taskData.deadline);
+        }
+    });
+}
+
 // Function to display a task
-function displayTask(taskId, taskText, creationTime, deadline) {
-    // Create task element
+function displayTask(userId, taskId, taskText, creationTime, deadline) {
     const taskItem = document.createElement('li');
     taskItem.className = 'task-item';
 
-    // Task details
     const taskDetails = document.createElement('div');
     taskDetails.className = 'task-details';
 
@@ -57,17 +67,15 @@ function displayTask(taskId, taskText, creationTime, deadline) {
     taskDetails.appendChild(taskContent);
     taskDetails.appendChild(taskDeadline);
 
-    // Delete button
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-btn';
     deleteBtn.innerText = 'Delete';
     deleteBtn.onclick = () => {
-        remove(ref(db, `tasks/${taskId}`));
+        remove(ref(db, `tasks/${userId}/${taskId}`));
         taskItem.classList.add('removing');
         setTimeout(() => taskItem.remove(), 300);
     };
 
-    // Append elements
     taskItem.appendChild(taskDetails);
     taskItem.appendChild(deleteBtn);
     taskList.appendChild(taskItem);
@@ -84,26 +92,26 @@ function addTask() {
     }
 
     const creationTime = new Date().toLocaleString();
+    const userId = auth.currentUser.uid;
 
-    // Save task to Firebase
-    const newTaskRef = push(tasksRef);
+    const userTasksRef = ref(db, `tasks/${userId}`);
+    const newTaskRef = push(userTasksRef);
     set(newTaskRef, {
         text: taskText,
         creationTime: creationTime,
         deadline: deadline
     });
 
-    // Clear input fields
     taskInput.value = "";
     deadlineInput.value = "";
 }
 
-// Event listener for adding task
+// Event listener for adding a task
 addBtn.addEventListener('click', addTask);
 
-// Allow pressing Enter to add task
-taskInput.addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        addTask();
-    }
+// Log out functionality
+logoutBtn.addEventListener('click', () => {
+    signOut(auth).then(() => {
+        window.location.href = "login.html"; // Redirect to login page
+    });
 });

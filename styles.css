@@ -47,6 +47,7 @@ h1 {
 
 #add-btn:hover {
     background-color: #0056b3;
+    font-size: large;
 }
 
 #task-list {
@@ -93,4 +94,20 @@ h1 {
 
 .delete-btn:hover {
     background-color: #e60000;
+    font-size: large;
+}
+
+#logout-btn {
+    padding: 10px 20px;
+    background-color: #0dff00;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#logout-btn:hover {
+    background-color: #00b342;
+    font-size: large;
 }
