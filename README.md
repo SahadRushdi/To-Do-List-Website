@@ -3,5 +3,3 @@ Login Or Sign up using an email and a password
 
 Add Delete and View Your To Do's page
 ![Screenshot 2024-10-01 112717](https://github.com/user-attachments/assets/3dd6c145-5e83-49dd-8826-3f9041612cfc)
-
-Token -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
